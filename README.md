@@ -217,10 +217,10 @@ export class AppModule {}
 // ─── OTLP 수신 ───
 otelcol.receiver.otlp "app_service" {
     grpc {
-        endpoint = "0.0.0.0:4137"
+        endpoint = "0.0.0.0:4317"
     }
     http {
-        endpoint = "0.0.0.0:4138"
+        endpoint = "0.0.0.0:4318"
     }
 
     output {
