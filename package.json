@@ -1,0 +1,65 @@
+{
+  "name": "@point3/observability",
+  "version": "0.2.0",
+  "description": "OpenTelemetry SDK wrapper for Point3 services",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./register": {
+       "types": "./dist/register.d.ts",
+       "import": "./dist/register.js",
+       "require": "./dist/register.cjs"
+     },
+     "./nest": {
+       "types": "./dist/nest/index.d.ts",
+       "import": "./dist/nest/index.js",
+       "require": "./dist/nest/index.cjs"
+     }
+   },
+  "sideEffects": [
+    "./dist/index.*"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+     "@opentelemetry/api-logs": "^0.211.0",
+     "@opentelemetry/auto-instrumentations-node": "^0.69.0",
+     "@opentelemetry/exporter-logs-otlp-http": "^0.211.0",
+     "@opentelemetry/exporter-metrics-otlp-http": "^0.211.0",
+     "@opentelemetry/exporter-trace-otlp-http": "^0.211.0",
+     "@opentelemetry/instrumentation-runtime-node": "^0.24.0",
+     "@opentelemetry/sdk-logs": "^0.211.0",
+     "@opentelemetry/sdk-metrics": "^2.5.0",
+     "@opentelemetry/sdk-node": "^0.211.0",
+     "@opentelemetry/semantic-conventions": "^1.39.0"
+   },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "@opentelemetry/api": "^1.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@nestjs/common": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@nestjs/common": "^11.1.13",
+    "@nestjs/core": "^11.1.13",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.0"
+  }
+}
