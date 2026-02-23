@@ -15,8 +15,8 @@ import {
 
 import type { Instrumentation } from "@opentelemetry/instrumentation";
 import type { ObservabilityOptions } from "./types";
-import { patchConsole } from "./log/console-patch";
-import { getOriginalConsole } from "./log/emit";
+import { patchConsole } from "./log";
+import { getOriginalConsole } from "./log";
 
 const DEFAULT_ENDPOINT = "http://alloy:4318";
 const METRIC_EXPORT_INTERVAL_MS = 2000;
