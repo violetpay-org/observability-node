@@ -25,11 +25,11 @@ const RUNTIME_MONITORING_PRECISION_MS = 2000;
 let initialized = false;
 
 function getMainModuleFilename(): string | undefined {
-  try {
-    return require.main?.filename;
-  } catch {
-    return undefined;
-  }
+    try {
+        return require.main?.filename;
+    } catch {
+        return undefined;
+    }
 }
 
 function resolveStartDir(): string {

@@ -121,83 +121,34 @@ import { register } from "@point3/observability/register";
 register({ patchConsole: false });
 ```
 
-## NestJS 통합
+## 커스텀 로거 통합
 
-NestJS 애플리케이션에서 전용 로거 모듈을 사용하여 OTel 로그와 통합할 수 있다.
-
-### Point3LoggerModule 설정
-
-`AppModule`에서 `Point3LoggerModule`을 import 한다.
+console 패치 대신 직접 로깅을 제어해야 하는 경우 (예: 컴플라이언스 요구사항으로 PII 로그를 별도 파이프라인으로 분리), `emitLog`를 직접 사용할 수 있다.
 
 ```typescript
-import { Module } from "@nestjs/common";
-import { Point3LoggerModule } from "@point3/observability/nest";
+import { register } from "@point3/observability/register";
+import { emitLog } from "@point3/observability/log";
+import type { LogLevel } from "@point3/observability/log";
 
-@Module({
-  imports: [Point3LoggerModule],
-})
-export class AppModule {}
+register({ patchConsole: false }); // console 자동 패치 비활성화
+
+// 관측 로그 → OTLP → Loki
+emitLog("info", ["이체 요청 수신", { requestId: "abc" }]);
+
+// PII 로그 → 별도 처리 (emitLog를 호출하지 않으므로 Loki에 안 감)
+auditLogger.write({ accountNumber: "...", amount: 50000 });
 ```
 
-### 전역 로거 적용
+### 내보내기 목록
 
-`main.ts`에서 `app.useLogger()`를 사용하여 NestJS 시스템 로그를 `Point3Logger`로 교체한다.
-
-```typescript
-import { NestFactory } from "@nestjs/core";
-import { Point3Logger } from "@point3/observability/nest";
-import { AppModule } from "./app.module";
-
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  
-  // NestJS 내부 로그를 Point3Logger로 출력
-  app.useLogger(app.get(Point3Logger));
-  
-  await app.listen(3000);
-}
-bootstrap();
-```
-
-### DI 주입 및 사용
-
-서비스나 컨트롤러에서 `Point3Logger`를 주입받아 사용할 수 있다.
-
-```typescript
-import { Injectable } from "@nestjs/common";
-import { Point3Logger } from "@point3/observability/nest";
-
-@Injectable()
-export class AppService {
-  constructor(private readonly logger: Point3Logger) {
-    this.logger.setContext(AppService.name);
-  }
-
-  doSomething() {
-    this.logger.log("작업 수행 중...", { detail: "extra info" });
-  }
-}
-```
-
-### Winston 마이그레이션
-
-기존 `nest-winston` 등을 사용하던 환경에서 쉽게 전환할 수 있다.
-
-**Before:**
-```typescript
-import { WinstonModule } from "nest-winston";
-// ... winston 설정 복잡함
-```
-
-**After:**
-```typescript
-import { Point3LoggerModule } from "@point3/observability/nest";
-
-@Module({
-  imports: [Point3LoggerModule],
-})
-export class AppModule {}
-```
+| export | 설명 |
+|--------|------|
+| `emitLog(level, args)` | OTel LogRecord 전송 + stdout/stderr 출력 |
+| `shouldLog(level)` | `LOG_LEVEL` 기준 해당 레벨 출력 여부 |
+| `getConfiguredLogLevel()` | 현재 설정된 로그 레벨 반환 |
+| `getOriginalConsole()` | 패치 이전의 원본 console 메서드 |
+| `patchConsole()` / `unpatchConsole()` | console 패치 수동 제어 |
+| `LogLevel`, `LogEntry` | 타입 |
 
 ## Alloy 설정
 
@@ -359,7 +310,7 @@ Loki에서 Tempo(Trace)로 바로 이동할 수 있도록 **Derived Fields**를 
 |------------|------|
 | `@point3/observability` | side-effect — import 시 즉시 SDK 시작 |
 | `@point3/observability/register` | `register()` 함수만 export, side-effect 없음 |
-| `@point3/observability/nest` | NestJS 통합용 모듈 및 로거 export |
+| `@point3/observability/log` | `emitLog`, `patchConsole` 등 로그 유틸리티 export |
 
 `@point3/observability`를 import하면 내부적으로 `register()`를 옵션 없이 호출한다. 커스텀이 필요하면 `@point3/observability/register`에서 직접 호출.
 
@@ -370,8 +321,7 @@ src/
 ├── index.ts       # side-effect 엔트리: register()를 옵션 없이 호출
 ├── register.ts    # register() 구현 + export
 ├── types.ts       # ObservabilityOptions 인터페이스
-├── log/           # 로깅 처리 및 콘솔 패치 로직
-└── nest/          # NestJS 통합 모듈 및 로거
+└── log/           # 로깅 유틸리티 (emitLog, console patch 등)
 ```
 
 ## 빌드

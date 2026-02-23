@@ -1,6 +1,6 @@
 {
   "name": "@point3/observability",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "OpenTelemetry SDK wrapper for Point3 services",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -17,10 +17,10 @@
        "import": "./dist/register.js",
        "require": "./dist/register.cjs"
      },
-     "./nest": {
-       "types": "./dist/nest/index.d.ts",
-       "import": "./dist/nest/index.js",
-       "require": "./dist/nest/index.cjs"
+     "./log": {
+       "types": "./dist/log/index.d.ts",
+       "import": "./dist/log/index.js",
+       "require": "./dist/log/index.cjs"
      }
    },
   "sideEffects": [
@@ -46,19 +46,9 @@
      "@opentelemetry/semantic-conventions": "^1.39.0"
    },
   "peerDependencies": {
-    "@nestjs/common": "^10.0.0 || ^11.0.0",
     "@opentelemetry/api": "^1.9.0"
   },
-  "peerDependenciesMeta": {
-    "@nestjs/common": {
-      "optional": true
-    }
-  },
   "devDependencies": {
-    "@nestjs/common": "^11.1.13",
-    "@nestjs/core": "^11.1.13",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2",
     "tsup": "^8.0.0",
     "typescript": "^5.7.0"
   }
