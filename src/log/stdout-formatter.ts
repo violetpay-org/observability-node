@@ -74,8 +74,5 @@ export function formatJson(entry: LogEntry): string {
 }
 
 export function format(entry: LogEntry): string {
-  if (process.env.NODE_ENV === "production") {
-    return formatJson(entry);
-  }
   return formatPretty(entry);
 }
